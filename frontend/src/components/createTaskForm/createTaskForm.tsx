@@ -1,4 +1,10 @@
-import React, { FC, ReactElement, useState, useEffect } from 'react';
+import React, {
+  FC,
+  ReactElement,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 import {
   Box,
   Typography,
@@ -9,6 +15,7 @@ import {
   LinearProgress,
 } from '@mui/material';
 import { useMutation } from 'react-query';
+import { TaskStatusChangedContext } from '../../context';
 
 import { Status } from './enums/Status';
 import { Priority } from './enums/Priority';
@@ -28,6 +35,8 @@ export const CreateTaskForm: FC = (): ReactElement => {
   const [status, setStatus] = useState<string>(Status.todo);
   const [priority, setPriority] = useState<string>(Priority.normal);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+
+  const taskUpdatedContext = useContext(TaskStatusChangedContext);
 
   // Task Mutation
   const createTaskMutation = useMutation((data: ICreateTask) =>
@@ -53,6 +62,7 @@ export const CreateTaskForm: FC = (): ReactElement => {
   useEffect(() => {
     if (createTaskMutation.isSuccess) {
       setShowSuccess(true);
+      taskUpdatedContext.toggle();
     }
 
     const successTimeout = setTimeout(() => {
@@ -82,7 +92,7 @@ export const CreateTaskForm: FC = (): ReactElement => {
       <Typography mb={2} component="h2" variant="h6">
         Create A Task
       </Typography>
-      0
+
       <Stack sx={{ width: '100%' }} spacing={2}>
         <TaskTitleField
           disabled={createTaskMutation.isLoading}
